@@ -1,5 +1,9 @@
 # ISIDのデータコンペ用レポジトリ・管理 
 
+## ここ(github)の使いみち
+* レポジトリ
+* Issuesをチャットとしてコミュニケーションに使えれば便利？
+
 ## submit履歴
 No|概要|validation結果|sunbit_score
 -|-|-|-
