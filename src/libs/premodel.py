@@ -1,36 +1,45 @@
+import pandas as pd
+from sklearn.metrics import mean_absolute_error
 from sklearn.preprocessing import StandardScaler
 
 
-ss = StandardScaler()
-ss.fit(train_df)
+def standazation(train_df, test_df):
+    '''
+    正規化を行うクラス
 
-colnames = train_df.columns
-train_df = pd.DataFrame(ss.transform(train_df))
-train_df.columns = colnames
+    trainの平均・分散でtrain/testを正規化する
+    予測のときに逆正規化をする必要があるので、使用したクラスはreturnする    
+    '''
+    ss = StandardScaler()
+    ss.fit(train_df)
 
-test_df = pd.DataFrame(ss.transform(test_df))
-test_df.columns = colnames
-test_df.fillna(0, inplace=True)
-test_df.drop(['engine_dead'], axis=1, inplace=True)
+    colnames = train_df.columns
+    train_df = pd.DataFrame(ss.transform(train_df))
+    train_df.columns = colnames
+    train_df.fillna(0, inplace=True)
 
-# %%
-TEST_SIZE = 0.2
-x_learn, x_valid, y_learn, y_valid = train_test_split(train_df.drop(['engine_dead'], axis=1),
-                                                      train_df['engine_dead'], test_size=TEST_SIZE)
-x_learn.shape, x_valid.shape, y_learn.shape, y_valid.shape
-
-# %%
+    test_df = pd.DataFrame(ss.transform(test_df))
+    test_df.columns = colnames
+    test_df.fillna(0, inplace=True)
+    test_df.drop(['engine_dead'], axis=1, inplace=True)
+    return ss, colnames, train_df, test_df
 
 
-def regg_rul(y_pred, x_valid, colnames):
+def decode_predict(y_pred, x_valid, ss, colnames):
+    '''
+    寿命予測のために、正規化の逆(平均を足して分散を掛ける作業をskleanのクラスがやってくれる)を行う
+    '''
     inv_valid = pd.DataFrame(ss.inverse_transform(
         pd.concat([y_pred, x_valid], axis=1)))
     inv_valid.columns = colnames
     return inv_valid['engine_dead']
 
 
-def cal_mae(pre, x_valid, y_valid, colnames):
-    inv_y_pred = regg_rul(pre, x_valid, colnames)
-    inv_y_valid = regg_rul(y_valid, x_valid, colnames)
+def cal_mae(pre, x_valid, y_valid, ss, colnames):
+    '''
+    validデータの真の値と予測値の絶対平均誤差を計算する
+    '''
+    inv_y_pred = decode_predict(pre, x_valid, ss, colnames)
+    inv_y_valid = decode_predict(y_valid, x_valid, ss, colnames)
 
     return mean_absolute_error(inv_y_valid, inv_y_pred)

@@ -16,10 +16,10 @@ __pycache__/
 # input/output data for datacompetion
 input/
 output/
+data/
 
 # Distribution / packaging
 .Python
-env/
 build/
 develop-eggs/
 dist/

@@ -3,7 +3,8 @@ import numpy as np
 import os
 import glob
 
-OUT_NAME = 'train_test_add_duration_event.py'
+RANDOM_SEED = 0
+OUT_NAME = 'train_test_add_duration_event.csv'
 VALID_NUM_ENGINE = 50
 
 
@@ -14,8 +15,8 @@ def load_data(dir_path, output=True, init=False):
             return pd.read_csv(csv_path)
 
     # csvのpathリストの作成
-    train_dir = os.path.join(dir_path, 'Train Files/Train Files')
-    test_dir = os.path.join(dir_path, 'Test Files/Test Files')
+    train_dir = os.path.join(dir_path, 'Train Files')
+    test_dir = os.path.join(dir_path, 'Test Files')
     train_csv_list = glob.glob(train_dir + '/*.csv')
     test_csv_list = glob.glob(test_dir + '/*.csv')
 
@@ -64,7 +65,7 @@ def make_train_test_data(dir_path, output=True, init=False):
 
 def make_valid_data(train):
     train_eg = train['engine_no'].unique()
-    np.random.seed(0)
+    np.random.seed(RANDOM_SEED)
     valid_eg = np.random.choice(train_eg, VALID_NUM_ENGINE)
     learn_eg = np.setdiff1d(train_eg, valid_eg)
 

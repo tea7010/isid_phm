@@ -21,6 +21,8 @@ def submitform(test, predict, output=False, output_path=''):
 
     if output:
         date = datetime.now().strftime('%d_%m_%Y')
+        if not os.path.exists(output_path):
+            os.mkdir(output_path)
         output_path = os.path.join(output_path, 'C0002_%s.csv' % date)
         rul_predict_test.to_csv(output_path, index=False)
 
