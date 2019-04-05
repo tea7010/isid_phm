@@ -35,7 +35,7 @@ def decode_predict(y_pred, x_valid, ss, colnames):
     return inv_valid['engine_dead']
 
 
-def cal_mae(pre, x_valid, y_valid, ss, colnames):
+def mae_of_predict(pre, x_valid, y_valid, ss, colnames):
     '''
     validデータの真の値と予測値の絶対平均誤差を計算する
     '''

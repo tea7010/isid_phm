@@ -1,19 +1,14 @@
 import pandas as pd
 import numpy as np
 import os
+import pickle
 import glob
 
 RANDOM_SEED = 0
-OUT_NAME = 'train_test_add_duration_event.csv'
 VALID_NUM_ENGINE = 50
 
 
-def load_data(dir_path, output=True, init=False):
-    csv_path = os.path.join(dir_path, OUT_NAME)
-    if not init:
-        if os.path.exists(csv_path):
-            return pd.read_csv(csv_path)
-
+def load_data(dir_path):
     # csvのpathリストの作成
     train_dir = os.path.join(dir_path, 'Train Files')
     test_dir = os.path.join(dir_path, 'Test Files')
@@ -41,7 +36,7 @@ def load_data(dir_path, output=True, init=False):
 
         # エンジンNo
         df_i['engine_no'] = os.path.basename(
-            file_i)[len(train_or_test + '_'):-4]
+            file_i)[:-4]
 
         df = pd.concat([df, df_i], axis=0)
 
@@ -50,17 +45,14 @@ def load_data(dir_path, output=True, init=False):
 
     # いらないカラムの削除
     df.drop(['index', 'Unnamed: 25'], axis=1, inplace=True)
-
-    if output:
-        df.to_csv(csv_path, index=False)
     return df
 
 
-def make_train_test_data(dir_path, output=True, init=False):
-    df = load_data(dir_path, output, init)
-    train = df[df['is_train'] == 1]
-    test = df[df['is_train'] == 0]
-    return df, train, test
+def make_train_test_data(dir_path):
+    df = load_data(dir_path)
+    train = df[df['is_train'] == 1].copy()
+    test = df[df['is_train'] == 0].copy()
+    return train, test
 
 
 def make_valid_data(train):

@@ -9,6 +9,7 @@ No|概要|validation結果|sunbit_score
 -|-|-|-
 1|trainの各エンジンの最終フライト数の平均を、予測フライト数とする|32.3|31
 2|回帰アプローチ|35.16|37.27
+3|SVR|24.58|25.66080435
 
 ## ToDo
 1. 検証（validation)データの作成
@@ -48,7 +49,7 @@ activate isid
 ### 2. 端末でコードを実行
 `isid_phm`下で以下を実行すると
 ```
-python src/try_model.py
+python src/get_start.py
 ```
 こんな流れを一通り実行してくれる。
 1. データDL
