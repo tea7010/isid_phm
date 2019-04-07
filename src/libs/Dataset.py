@@ -11,6 +11,9 @@ DEFAULT_DIR = 'data'
 DATA_POOL_DIR = os.path.join(DEFAULT_DIR, 'data_pool')
 SUBMIT_DIR = os.path.join(DEFAULT_DIR, 'submission')
 
+if not os.path.exists(DEFAULT_DIR):
+    os.mkdir(DEFAULT_DIR)
+
 if not os.path.exists(DATA_POOL_DIR):
     os.mkdir(DATA_POOL_DIR)
 
@@ -20,12 +23,8 @@ if not os.path.exists(SUBMIT_DIR):
 
 class Dataset:
     '''
-    次の５フェイズ？
-    データの読み込み
-    特徴量作成
-    学習前処理タイプ
-    学習
-    評価
+    baseデータの読み込み
+    特徴量作成の親クラス
     '''
 
     def __init__(self):

@@ -11,8 +11,8 @@ from libs.EngineSumBasics import EngineSumBasics
 from libs.premodel import standazation, decode_predict, mae_of_predict
 from libs.submit import submitform
 
-REGANARATE = True
-FEATURE_REGANARATE = True
+REGANARATE = False
+FEATURE_REGANARATE = False
 TEST_SIZE = 0.2
 RANDOM_STRATE_VALID = 0
 
