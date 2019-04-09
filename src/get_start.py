@@ -1,57 +1,74 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_absolute_error
+from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVR
 from lightgbm import LGBMRegressor
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import Lasso
+from sklearn.linear_model import Ridge
+from sklearn.linear_model import LinearRegression
 
 from libs.Dataset import Dataset
 from libs.EngineSumBase import EngineSumBase
 from libs.EngineSumTimeGrad import EngineSumTimeGrad
 from libs.EngineSumLastDur import EngineSumLastDur
 from libs.EngineSumBasics import EngineSumBasics
-from libs.premodel import standazation, decode_predict, mae_of_predict
+from libs.standarzation import standarzation_x, encode_y, decode_z
+from libs.premodel import split_learn_valid_test, standazation, decode_predict, mae_of_predict
 from libs.submit import submitform
 
-REGANARATE = False
-FEATURE_REGANARATE = False
-TEST_SIZE = 0.2
-RANDOM_STRATE_VALID = 0
+REGANARATE = True
+TRAIN_CUTOFF = True
+NUM_RESAMPLE_TRAIN = 5
+SCALING = True
+SUBMIT = True
 
 # データ読み込み
-df = Dataset().load_data(REGANARATE)
+df = Dataset().load_data(REGANARATE, TRAIN_CUTOFF, NUM_RESAMPLE_TRAIN)
 
 # エンジン別特徴量の作成
-summarized_df = EngineSumBase().create_feature(df, FEATURE_REGANARATE)
+summarized_df = EngineSumBase().create_feature(df, REGANARATE)
 summarized_df = EngineSumTimeGrad().create_feature(
-    df, summarized_df, FEATURE_REGANARATE)
+    df, summarized_df, REGANARATE)
 summarized_df = EngineSumLastDur().create_feature(
-    df, summarized_df, FEATURE_REGANARATE)
-# summarized_df = EngineSumBasics().create_feature(df, summarized_df, FEATURE_REGANARATE)
+    df, summarized_df, REGANARATE)
+summarized_df = EngineSumBasics().create_feature(
+    df, summarized_df, REGANARATE)
 
-# 正規化を行う
-train_df = summarized_df[summarized_df['is_train']
-                         == 1].drop(['is_train'], axis=1)
-test_df = summarized_df[summarized_df['is_train']
-                        == 0].drop(['is_train'], axis=1)
+# train, valid, testに分割
+train, valid, test = split_learn_valid_test(summarized_df)
+x_learn = train.drop(['dead_duration'], axis=1).fillna(0)
+y_learn = train['dead_duration'].fillna(0)
+x_valid = valid.drop(['dead_duration'], axis=1).fillna(0)
+y_valid = valid['dead_duration'].fillna(0)
+x_test = test.drop(['dead_duration'], axis=1).fillna(0)
 
-ss, colnames, train_df, test_df = standazation(train_df, test_df)
-
-
-# モデルの学習用と評価用にtrainを分割
-x_learn, x_valid, y_learn, y_valid = train_test_split(train_df.drop(['engine_dead'], axis=1),
-                                                      train_df['engine_dead'], test_size=TEST_SIZE,
-                                                      random_state=RANDOM_STRATE_VALID)
+# trainで正規化を行う
+if SCALING:
+    x_learn, x_valid, x_test = standarzation_x(x_learn, x_valid, x_test)
+    yz_learn = encode_y(y_learn, y_learn.mean(), y_learn.std())
 
 # モデル学習
-model = SVR(gamma='auto')
+# model = LinearRegression()
+# model = Lasso()
+# model = Ridge()
 # model = LGBMRegressor()
-model.fit(x_learn, y_learn)
+# model = RandomForestRegressor()
+model = SVR(gamma='auto')
+model.fit(x_learn, yz_learn)
 
 # モデル評価
-pre = pd.DataFrame(model.predict(x_valid), index=x_valid.index)
-valid_score = mae_of_predict(pre, x_valid, y_valid, ss, colnames)
-print("Valid score: ", valid_score)
+predict_z = pd.DataFrame(model.predict(x_valid), index=x_valid.index)
+valid_score = mean_absolute_error(
+    decode_z(predict_z, y_learn.mean(), y_learn.std()), y_valid)
+print('Valid score:', valid_score)
 
 # testを予測
-# pre = pd.DataFrame(model.predict(test_df), index=test_df.index)
-# pre_inv = decode_predict(pre, test_df, ss, colnames)
-# predit = submitform(test, pre_inv, True, output_path='data/submission')
+if SUBMIT:
+    predict_z = pd.DataFrame(model.predict(x_test), index=x_test.index)
+    predict_y = decode_z(predict_z, y_learn.mean(), y_learn.std())
+
+    test_df = df[df['is_train'] == 0].copy()
+    predit = submitform(test_df, predict_y, True,
+                        output_path='data/submission')

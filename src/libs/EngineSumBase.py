@@ -25,10 +25,13 @@ class EngineSumBase(Dataset):
 
             # 目的変数
             summarize_df.loc[eg_i,
-                             'engine_dead'] = eg_df['dead_duration'].iloc[-1]
+                             'dead_duration'] = eg_df['dead_duration'].iloc[-1]
 
             # train or test
             summarize_df.loc[eg_i,
                              'is_train'] = eg_df['is_train'].iloc[-1]
 
+            # train or test
+            summarize_df.loc[eg_i,
+                             'is_valid'] = eg_df['is_valid'].iloc[-1]
         return summarize_df

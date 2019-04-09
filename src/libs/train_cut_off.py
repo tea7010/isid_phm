@@ -2,22 +2,22 @@ import numpy as np
 import pandas as pd
 from sklearn.neighbors.kde import KernelDensity
 
-REUSE_NO = 1
 
-
-def cutoff_like_test(df, test):
+def cutoff_like_test(df, test, reuse_num=1):
     '''
     testと同じような感じでdfを後ろから、いい感じにちょん切る関数
 
     1. testのdead_duraitonを、カーネル密度推定
     2. その得られたtestの推定分布からランダムサンプリングして、dfをちょん切る
+
+    reuse_num > 1だと、同じサンプルからもう一回カットオフサンプルを生成
     '''
     kd = KernelDensity()
     test_dur = test.groupby('engine_no')['dead_duration'].first()
     kd.fit(np.array(test_dur).reshape(-1, 1))
 
     cutoff_df = pd.DataFrame()
-    for i in range(REUSE_NO):
+    for i in range(reuse_num):
         cutoff_df = _reuse_engine(df, kd, cutoff_df, i)
 
     return cutoff_df

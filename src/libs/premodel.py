@@ -3,6 +3,20 @@ from sklearn.metrics import mean_absolute_error
 from sklearn.preprocessing import StandardScaler
 
 
+def split_learn_valid_test(all_df):
+    train = all_df[(all_df['is_train'] == 1) & (all_df['is_valid'] == 0)]
+    valid = all_df[all_df['is_valid'] == 1]
+    test = all_df[all_df['is_train'] == 0]
+
+    def drop_some_cols(_df):
+        return _df.drop(['is_train', 'is_valid'], axis=1)
+    train = drop_some_cols(train)
+    valid = drop_some_cols(valid)
+    test = drop_some_cols(test)
+
+    return train, valid, test
+
+
 def standazation(train_df, test_df):
     '''
     正規化を行うクラス
@@ -21,7 +35,7 @@ def standazation(train_df, test_df):
     test_df = pd.DataFrame(ss.transform(test_df))
     test_df.columns = colnames
     test_df.fillna(0, inplace=True)
-    test_df.drop(['engine_dead'], axis=1, inplace=True)
+    test_df.drop(['dead_duration'], axis=1, inplace=True)
     return ss, colnames, train_df, test_df
 
 
@@ -32,7 +46,7 @@ def decode_predict(y_pred, x_valid, ss, colnames):
     inv_valid = pd.DataFrame(ss.inverse_transform(
         pd.concat([y_pred, x_valid], axis=1)))
     inv_valid.columns = colnames
-    return inv_valid['engine_dead']
+    return inv_valid['dead_duration']
 
 
 def mae_of_predict(pre, x_valid, y_valid, ss, colnames):
