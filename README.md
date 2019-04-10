@@ -1,8 +1,10 @@
 # ISIDのデータコンペ用レポジトリ・管理 
 
-## ここ(github)の使いみち
-* レポジトリ
-* Issuesをチャットとしてコミュニケーションに使えれば便利？
+優勝目指せ！が第一目標かもしれませんが、BID全体の機械学習知識/経験の底上げが浅田さんの意図だと思ってます。
+* 現段階ではデータの理解度等に差があると思うので、3人で一つのモデルを良くしていくのは、なかなか難しいです。
+* そこで、個人個人でまずデータを眺める・単純でもいいので、モデリングしてみることをおすすめしたいです。
+* その後、チームで同じモデルを改善していくなり、違うアプローチを分担して試していったり考えましょう。
+* src下に自分の名前のフォルダ等作って、自分の実験場にしていってもいいです
 
 ## submit履歴
 No|概要|validation結果|sunbit_score
@@ -12,10 +14,26 @@ No|概要|validation結果|sunbit_score
 3|SVR|24.58|25.66080435
 4|以下、アプローチ拡大のためvalidデータを変更
 5|ベースライン|22.80919959118628|17.326520
+6|内部評価のための検証|34.06579|38.75855072
 
-## ToDo
-1. 検証（validation)データの作成
-1. アプローチ・特徴量・モデリングのPDCA <- いまここ
+## フォルダ構成
+```
+docs: ドキュメント（整理してない）
+src
+ |- libs: 共通で使えそうなモジュールを置く
+ |- notebook: ドキュメント的なものや実験的なノートブック（ipynb)置き場
+```
+
+## Getting started
+1. notebookフォルダにhowto_EDAなど簡単なチュートリアルを用意しました。
+
+1. github上(ブラウザ）で閲覧できるので、一回読んでみる
+![](./docs/img/2019-04-10-16-45-36.png)
+
+1. 自分でjupyter notebook/labを立ち上げて、そのファイルを実行してみる（jupyter notebook/labで開く）
+
+1. 自分で簡単な予測モデルを作ってみたりしてみる
+
 
 ## 関連URL
 サイト|URL
@@ -27,35 +45,3 @@ No|概要|validation結果|sunbit_score
 RULの論文|https://www.researchgate.net/publication/271921403_Remaining_useful_life_prediction_using_prognostic_methodology_based_on_logical_analysis_of_data_and_Kaplan-Meier_estimation
 有名そうな論文|http://or.nsfc.gov.cn/bitstream/00001903-5/93202/1/1000004637516.pdf
 
-## Getting started
-最初にやることは、
-1. condaのenvからpythonの環境を作成
-1. terminalで環境を開き、好きなコードを実行
-
-### 1. condaのenvからpythonの環境を作成
-anacondaは入ってなかったら多分最新のやつinstallしとけば大丈夫です。
-
-`isid_phm\conda_env`へ移動して、次を実行
-```
-conda env create -f env.yml
-```
-
-各種パッケージのinstallが出来たら、windowsなら
-```
-activate isid
-```
-で環境が立ち上がるはずです。
-* 分からなかったら誰かにきくかドキュメントを参照 https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
-* 多分まだ必要なものが入ってないかもしれないので、適宜ymlもアップデートしていきましょう
-
-### 2. 端末でコードを実行
-`isid_phm`下で以下を実行すると
-```
-python src/get_start.py
-```
-こんな流れを一通り実行してくれる。
-1. データDL
-1. データ前処理
-1. モデル学習
-1. 内部評価値の表示
-1. 提出用ファイルを出力
