@@ -32,7 +32,7 @@ class Dataset:
         self._data_dir = DATA_POOL_DIR
         self._submit_dir = SUBMIT_DIR
 
-    def load_data(self, reproduce=False, cutoff=True, num_train_sampling=1):
+    def load_data(self, reproduce=False, cutoff=True, num_train_sampling=1, write_pickel=True):
         '''
         データの読み込みをする
 
@@ -60,15 +60,15 @@ class Dataset:
         self.df_p = 'base_df'
 
         if reproduce:
-            return self._data_generate(cutoff, num_train_sampling)
+            return self._data_generate(cutoff, num_train_sampling, write_pickel)
         else:
             if self.df_p in os.listdir(self._data_dir):
                 return self.load_pickel(self.df_p)
 
             else:
-                return self._data_generate(cutoff, num_train_sampling)
+                return self._data_generate(cutoff, num_train_sampling, write_pickel)
 
-    def _data_generate(self, cutoff, num_train_sampling):
+    def _data_generate(self, cutoff, num_train_sampling, write_pickel):
         # データのDL/解凍
         download_unzip_data(self._root_dir)
 
@@ -89,7 +89,8 @@ class Dataset:
         cut_valid = cutoff_like_test(valid, test, 1)
         merged_df = pd.concat([merged_df, cut_valid], axis=0)
 
-        self.write_pickel(merged_df, self.df_p)
+        if write_pickel:
+            self.write_pickel(merged_df, self.df_p)
         return merged_df
 
     def load_pickel(self, fname):

@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 from sklearn.preprocessing import StandardScaler
+from sklearn.neural_network import MLPRegressor
 from sklearn.svm import SVR
 from lightgbm import LGBMRegressor
 from sklearn.ensemble import RandomForestRegressor
@@ -60,6 +61,7 @@ def run_reggression_model(params):
         'LGB': 'LGBMRegressor(**model_params)',
         'RF': 'RandomForestRegressor(**model_params)',
         'SVR': 'SVR(**model_params)',
+        'MLP': 'MLPRegressor(**model_params)'
     }
 
     model = eval(model_ex_dict[USE_MODEL])
