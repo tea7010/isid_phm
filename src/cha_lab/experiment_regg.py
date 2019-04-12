@@ -22,5 +22,4 @@ if __name__ == "__main__":
 
         experiment_df.loc[i, 'Experiment_No'] = i
         experiment_df.loc[i, 'score'] = valid_score
-
-    experiment_df.to_csv('result.csv')
+        experiment_df.to_csv('result.csv')
