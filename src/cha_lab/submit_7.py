@@ -1,8 +1,9 @@
 import pandas as pd
-import sys
-sys.path.append('D://isid_phm/src/')
 
 if __name__ == "__main__":
+    import sys
+    sys.path.append('./src')
+
     from run_reggression_model import run_reggression_model
 
     params = {
