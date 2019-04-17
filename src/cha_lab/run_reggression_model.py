@@ -11,13 +11,13 @@ from sklearn.linear_model import Ridge
 from sklearn.linear_model import LinearRegression
 
 from libs.Dataset import Dataset
-from libs.EngineSumBase import EngineSumBase
-from libs.EngineSumTimeGrad import EngineSumTimeGrad
-from libs.EngineSumLastDur import EngineSumLastDur
-from libs.EngineSumBasics import EngineSumBasics
+from libs.engine_summarize.EngineSumBase import EngineSumBase
+from libs.engine_summarize.EngineSumTimeGrad import EngineSumTimeGrad
+from libs.engine_summarize.EngineSumLastDur import EngineSumLastDur
+from libs.engine_summarize.EngineSumBasics import EngineSumBasics
 from libs.standarzation import standarzation_x, encode_y, decode_z
-from libs.premodel import split_learn_valid_test, standazation, decode_predict, mae_of_predict
-from libs.submit import submitform
+from libs.get_train_valid_test import get_train_valid_test
+from libs.io.submit import submitform
 
 
 def run_reggression_model(params):
@@ -41,7 +41,7 @@ def run_reggression_model(params):
         df, summarized_df, REGENARATE)
 
     # train, valid, testに分割
-    train, valid, test = split_learn_valid_test(summarized_df)
+    train, valid, test = get_train_valid_test(summarized_df)
     x_learn = train.drop(['dead_duration'], axis=1).fillna(0)
     y_learn = train['dead_duration'].fillna(0)
     x_valid = valid.drop(['dead_duration'], axis=1).fillna(0)

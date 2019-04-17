@@ -8,7 +8,7 @@ RANDOM_SEED = 0
 VALID_NUM_ENGINE = 30
 
 
-def load_data(dir_path):
+def merge_train_test(dir_path):
     # csvのpathリストの作成
     train_dir = os.path.join(dir_path, 'Train Files')
     test_dir = os.path.join(dir_path, 'Test Files')
@@ -44,14 +44,6 @@ def load_data(dir_path):
 
     # testのengine_deadは0
     df.loc[df[df['is_train'] == 0].index, 'engine_dead'] = 0
-
-    # valid用のエンジンをランダムに選択
-    df['is_valid'] = 0
-    train_eg = df[df['is_train'] == 1]['engine_no'].unique()
-
-    np.random.seed(RANDOM_SEED)
-    valid_eg = np.random.choice(train_eg, VALID_NUM_ENGINE, replace=False)
-    df.loc[df[df['engine_no'].isin(valid_eg)].index, 'is_valid'] = 1
 
     # いらないカラムの削除
     df.drop(['index', 'Unnamed: 25'], axis=1, inplace=True)

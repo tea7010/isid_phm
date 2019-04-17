@@ -2,9 +2,10 @@ import os
 import pandas as pd
 import pickle
 
-from .dl_data import download_unzip_data
-from .load_data import load_data
-from .train_cut_off import cutoff_like_test
+from .io.dl_data import download_unzip_data
+from .io.merge_train_test import merge_train_test
+from .io.label_valid import label_valid, valid_engine_random
+from .io.train_cut_off import cutoff_like_test
 
 
 DEFAULT_DIR = 'data'
@@ -32,49 +33,40 @@ class Dataset:
         self._data_dir = DATA_POOL_DIR
         self._submit_dir = SUBMIT_DIR
 
-    def load_data(self, reproduce=False, cutoff=True, num_train_sampling=1, write_pickel=True):
-        '''
-        データの読み込みをする
-
-        input:
-            reproduce: bool
-                高速な読み込みのためにpickelに保存してるが、pickelの更新等で再生成させるときTrue
-            cutoff: bool
-                trainをtestの打ち切り数の推定分布から、似たような感じで打ち切るかどうか
-                （validは常に打ち切りする）
-            num_train_sampling: int > 0
-                trainの打ち切りを同一エンジンに対して複数回行うときの回数
-
-        returns:
-            pandas DataFrame
-                元のcsvをtrain, testを全ファイル繋げたもの
-                cutoffオプション次第で、is_valid, trainの行は減っている
-                他にも下記カラムが追加
-                    engine_no: エンジンNo
-                    duration: そのエンジンの累計フライト数
-                    dead_duration: 死んだフライト数
-                    engine_dead: そのフライトで死亡か生存か
-                    is_train: trainだと1
-                    is_valid: validだと1
-        '''
-        self.df_p = 'base_df'
+    def load_raw_data(self, reproduce=True):
+        self.df_raw = 'raw_df'
 
         if reproduce:
-            return self._data_generate(cutoff, num_train_sampling, write_pickel)
+            # データのDL/解凍
+            download_unzip_data(self._root_dir)
+
+            # 目的変数としてdead_duration・train_testをまとめたdfを作成
+            all_df = merge_train_test(self._root_dir)
+        else:
+            if self.df_raw in os.listdir(self._data_dir):
+                all_df = self.load_pickel(self.df_raw)
+        return all_df
+
+    def load_data(self, reproduce=True, cutoff=True, num_train_sampling=1, write_pickel=False):
+        self.df_p = 'base_df'
+        if reproduce:
+            return self._data_generate(reproduce, cutoff, num_train_sampling, write_pickel)
         else:
             if self.df_p in os.listdir(self._data_dir):
                 return self.load_pickel(self.df_p)
 
             else:
-                return self._data_generate(cutoff, num_train_sampling, write_pickel)
+                return self._data_generate(reproduce, cutoff, num_train_sampling, write_pickel)
 
-    def _data_generate(self, cutoff, num_train_sampling, write_pickel):
-        # データのDL/解凍
-        download_unzip_data(self._root_dir)
+    def _data_generate(self, reproduce, cutoff, num_train_sampling, write_pickel):
+        all_df = self.load_raw_data(reproduce)
 
-        # 目的変数としてdead_duration・train_testをまとめたdfを作成
-        all_df = load_data(self._root_dir)
-        train = all_df[(all_df['is_train'] == 1) & (all_df['is_valid'] != 1)]
+        # validエンジンの指定
+        valid_engine = valid_engine_random(all_df, 30)
+        all_df = label_valid(all_df, valid_engine)
+
+        train = all_df[(all_df['is_train'] == 1) &
+                       (all_df['is_valid'] != 1)]
         test = all_df[all_df['is_train'] == 0]
         valid = all_df[all_df['is_valid'] == 1]
 

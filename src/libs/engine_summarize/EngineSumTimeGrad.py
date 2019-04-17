@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from .Dataset import Dataset
+from ..Dataset import Dataset
 
 
 class EngineSumTimeGrad(Dataset):
