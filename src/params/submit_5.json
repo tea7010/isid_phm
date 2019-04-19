@@ -1,0 +1,11 @@
+{
+    "approach": "Engine_summary_reggresion",
+    "regenarate": true,
+    "train_cutoff": true,
+    "num_resample_train": 5,
+    "scaling": true,
+    "use_model": "SVR",
+    "model_params": {
+        "gamma": "auto"
+    }
+}
