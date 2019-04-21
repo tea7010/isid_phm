@@ -3,13 +3,17 @@
     "regenarate": true,
     "train_cutoff": true,
     "num_resample_train": 1,
+    "feature": [
+        "timegrad",
+        "timegrad_recent",
+        "last_dur",
+        "all_col_static"
+    ],
     "scaling": true,
     "use_model": "MLP",
     "model_params": {
-        "model_params": {
             "hidden_layer_sizes": 12,
             "activation": "tanh",
             "random_state": 3
-        }
     }
 }

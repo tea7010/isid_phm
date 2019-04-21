@@ -3,7 +3,7 @@ import numpy as np
 from ..Dataset import Dataset
 
 
-class EngineSumTimeGrad(Dataset):
+class EngineSumTimeGradStEd(Dataset):
     def __init__(self):
         super().__init__()
 
@@ -35,15 +35,15 @@ class EngineSumTimeGrad(Dataset):
             for regime_i in [1, 2, 3, 4, 5, 6]:
                 regime_df = eg_df[eg_df['Flight Regime'] == regime_i]
 
-                if len(regime_df) < 11:
+                if len(regime_df) < 2:
                     continue
 
                 for col_i in TARGET_COLS:
-                    # 最初との勾配
-                    exac_process = 'Grad_start_last'
+                    # 直近の勾配
+                    exac_process = 'Grad_last_50'
                     colname = 'Regime_%s_%s_%s' % (
                         regime_i, col_i, exac_process)
-                    summarize_df.loc[eg_i, colname] = self._cal_first_last_round_grad(
+                    summarize_df.loc[eg_i, colname] = self._cal_nearest_grad(
                         regime_df, col_i)
         return summarize_df
 
@@ -60,7 +60,7 @@ class EngineSumTimeGrad(Dataset):
         return grad
 
     def _cal_first_last_round_grad(self, regime_df, col_i):
-        ROUND_NUM = 10
+        ROUND_NUM = 1
         x = regime_df['duration']
         y = regime_df[col_i]
 

@@ -3,6 +3,7 @@
     "regenarate": true,
     "train_cutoff": false,
     "num_resample_train": null,
+    "feature": null,
     "scaling": null,
     "use_model": null,
     "model_params": null

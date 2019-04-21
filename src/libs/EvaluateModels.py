@@ -40,6 +40,7 @@ class EvaluateModels:
         self.REGENARATE = params['regenarate']
         self.TRAIN_CUT = params['train_cutoff']
         self.NUM_RESAMPLE_TRAIN = params['num_resample_train']
+        self.FEATURE = params['feature']
         self.SCALING = params['scaling']
         self.USE_MODEL = params['use_model']
         self.MODEL_PARAMS = params['model_params']
@@ -110,7 +111,7 @@ class EvaluateModels:
     def _model_approach(self, df, approach_type):
         if approach_type == 'Engine_summary_reggresion':
             model, x_learn, y_learn, x_valid, y_valid, x_test = engine_summarize_reggression(
-                df, self.REGENARATE, self.SCALING, self.USE_MODEL, self.MODEL_PARAMS)
+                df, self.REGENARATE, self.SCALING, self.USE_MODEL, self.MODEL_PARAMS, self.FEATURE)
         elif approach_type == 'Tutorial':
             model, x_learn, y_learn, x_valid, y_valid, x_test = tutorial_model(
                 df)

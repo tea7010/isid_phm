@@ -11,13 +11,19 @@ from libs.standarzation import standarzation_x, encode_y, decode_z
 
 from libs.engine_summarize.EngineSumBase import EngineSumBase
 from libs.engine_summarize.EngineSumTimeGrad import EngineSumTimeGrad
+from libs.engine_summarize.EngineSumTimeGradRecent import EngineSumTimeGradRecent
+from libs.engine_summarize.EngineSumTimeGradStEd import EngineSumTimeGradStEd
 from libs.engine_summarize.EngineSumLastDur import EngineSumLastDur
 from libs.engine_summarize.EngineSumBasics import EngineSumBasics
+from libs.engine_summarize.EngineSumBasicsMax import EngineSumBasicsMax
+from libs.engine_summarize.EngineSumBasicsMin import EngineSumBasicsMin
+from libs.engine_summarize.EngineSumBasicsMean import EngineSumBasicsMean
+from libs.engine_summarize.EngineSumBasicsStd import EngineSumBasicsStd
 
 
-def engine_summarize_reggression(df, REGENARATE, SCALING, USE_MODEL, MODEL_PARAMS):
+def engine_summarize_reggression(df, REGENARATE, SCALING, USE_MODEL, MODEL_PARAMS, FEAT):
     # エンジン別特徴量の作成
-    summarized_df = _make_feature(df, REGENARATE)
+    summarized_df = _make_feature(df, REGENARATE, FEAT)
 
     # train, valid, testに分割
     train, valid, test = get_train_valid_test(summarized_df)
@@ -40,14 +46,30 @@ def engine_summarize_reggression(df, REGENARATE, SCALING, USE_MODEL, MODEL_PARAM
         return model, x_learn, y_learn, x_valid, y_valid, x_test
 
 
-def _make_feature(df, REGENARATE):
+def _make_feature(df, REGENARATE, feat):
     summarized_df = EngineSumBase().create_feature(df, REGENARATE)
-    summarized_df = EngineSumTimeGrad().create_feature(
-        df, summarized_df, REGENARATE)
-    summarized_df = EngineSumLastDur().create_feature(
-        df, summarized_df, REGENARATE)
-    summarized_df = EngineSumBasics().create_feature(
-        df, summarized_df, REGENARATE)
+    if 'timegrad' in feat:
+        summarized_df = EngineSumTimeGrad().create_feature(
+            df, summarized_df, REGENARATE)
+    if 'timegrad_recent' in feat:
+        summarized_df = EngineSumTimeGradRecent().create_feature(
+            df, summarized_df, REGENARATE)
+    if "timegrad_sted" in feat:
+        summarized_df = EngineSumTimeGradStEd().create_feature(df, summarized_df, REGENARATE)
+    if 'last_dur' in feat:
+        summarized_df = EngineSumLastDur().create_feature(
+            df, summarized_df, REGENARATE)
+    if 'all_col_static' in feat:
+        summarized_df = EngineSumBasics().create_feature(
+            df, summarized_df, REGENARATE)
+    if 'all_col_std' in feat:
+        summarized_df - EngineSumBasicsStd().create_feature(df, summarized_df, REGENARATE)
+    if 'all_col_max' in feat:
+        summarized_df - EngineSumBasicsMax().create_feature(df, summarized_df, REGENARATE)
+    if 'all_col_min' in feat:
+        summarized_df - EngineSumBasicsMin().create_feature(df, summarized_df, REGENARATE)
+    if 'all_col_mean' in feat:
+        summarized_df - EngineSumBasicsMean().create_feature(df, summarized_df, REGENARATE)
     return summarized_df
 
 

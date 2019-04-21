@@ -41,11 +41,11 @@ class Dataset:
             download_unzip_data(self._root_dir)
 
             # 目的変数としてdead_duration・train_testをまとめたdfを作成
-            all_df = merge_train_test(self._root_dir)
+            _df = merge_train_test(self._root_dir)
         else:
             if self.df_raw in os.listdir(self._data_dir):
-                all_df = self.load_pickel(self.df_raw)
-        return all_df
+                _df = self.load_pickel(self.df_raw)
+        return _df
 
     def load_data(self, reproduce=True, cutoff=True, num_train_sampling=1, write_pickel=False):
         self.df_p = 'base_df'
@@ -59,7 +59,7 @@ class Dataset:
                 return self._data_generate(reproduce, cutoff, num_train_sampling, write_pickel)
 
     def _data_generate(self, reproduce, cutoff, num_train_sampling, write_pickel):
-        all_df = self.load_raw_data(reproduce)
+        all_df = self.load_raw_data(reproduce).copy()
 
         # validエンジンの指定
         valid_engine = valid_engine_random(all_df, 30)

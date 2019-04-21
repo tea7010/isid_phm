@@ -3,6 +3,12 @@
     "regenarate": true,
     "train_cutoff": true,
     "num_resample_train": 18,
+    "feature": [
+        "timegrad",
+        "timegrad_recent",
+        "last_dur",
+        "all_col_static"
+    ],
     "scaling": true,
     "use_model": "SVR",
     "model_params": {

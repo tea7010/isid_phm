@@ -3,7 +3,7 @@ import numpy as np
 from ..Dataset import Dataset
 
 
-class EngineSumTimeGrad(Dataset):
+class EngineSumTimeGradRecent(Dataset):
     def __init__(self):
         super().__init__()
 
@@ -39,11 +39,11 @@ class EngineSumTimeGrad(Dataset):
                     continue
 
                 for col_i in TARGET_COLS:
-                    # 最初との勾配
-                    exac_process = 'Grad_start_last'
+                    # 直近の勾配
+                    exac_process = 'Grad_last_50'
                     colname = 'Regime_%s_%s_%s' % (
                         regime_i, col_i, exac_process)
-                    summarize_df.loc[eg_i, colname] = self._cal_first_last_round_grad(
+                    summarize_df.loc[eg_i, colname] = self._cal_nearest_grad(
                         regime_df, col_i)
         return summarize_df
 
