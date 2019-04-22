@@ -47,20 +47,20 @@ class EvaluateModels:
 
         self.raw_df = Dataset().load_raw_data()
 
-    def run_cv(self):
-        self.cv_df = pd.DataFrame(index=range(FOLD_NUM))
+    def run_cv(self, n_fold=FOLD_NUM):
+        self.cv_df = pd.DataFrame(index=range(n_fold))
 
         train_eg = self.raw_df[self.raw_df['is_train']
                                == 1]['engine_no'].unique()
-        eg_split = np.array_split(train_eg, FOLD_NUM)
+        eg_split = np.array_split(train_eg, n_fold)
 
-        for i in range(FOLD_NUM):
+        for i in range(n_fold):
             score_i = self._learn_evaluate(eg_split[i])
 
-            print('%s/%s score: %s' % (i+1, FOLD_NUM, score_i))
+            print('%s/%s score: %s' % (i+1, n_fold, score_i))
             self.cv_df.loc[i, 'score'] = score_i
 
-        self.cv_score = self.cv_df['score'].sum()/FOLD_NUM
+        self.cv_score = self.cv_df['score'].sum()/n_fold
         print('CV score: %f' % self.cv_score)
 
     def run_hold_out(self):
