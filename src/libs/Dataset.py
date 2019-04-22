@@ -45,6 +45,14 @@ class Dataset:
         else:
             if self.df_raw in os.listdir(self._data_dir):
                 _df = self.load_pickel(self.df_raw)
+            else:
+                # データのDL/解凍
+                download_unzip_data(self._root_dir)
+
+                # 目的変数としてdead_duration・train_testをまとめたdfを作成
+                _df = merge_train_test(self._root_dir)
+
+                self.write_pickel(_df, self.df_raw)
         return _df
 
     def load_data(self, reproduce=True, cutoff=True, num_train_sampling=1, write_pickel=False):

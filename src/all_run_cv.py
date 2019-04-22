@@ -5,7 +5,7 @@ if __name__ == "__main__":
 
     from libs.EvaluateModels import EvaluateModels
 
-    N_FOLD = 20
+    N_FOLD = 26
     json_list = ['./src/params/submit_5.json',
                  './src/params/submit_6.json',
                  './src/params/submit_7.json',

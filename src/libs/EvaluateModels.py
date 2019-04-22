@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import multiprocessing as mp
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error
 from sklearn.preprocessing import StandardScaler
@@ -16,6 +17,8 @@ from libs.tutorial_model import tutorial_model
 
 FOLD_NUM = 5
 VALID_ENGINE_NUM = 30
+
+PROC = mp.cpu_count()
 
 
 class EvaluateModels:
@@ -45,23 +48,25 @@ class EvaluateModels:
         self.USE_MODEL = params['use_model']
         self.MODEL_PARAMS = params['model_params']
 
-        self.raw_df = Dataset().load_raw_data()
+        self.raw_df = Dataset().load_raw_data(reproduce=False)
 
     def run_cv(self, n_fold=FOLD_NUM):
         self.cv_df = pd.DataFrame(index=range(n_fold))
 
         train_eg = self.raw_df[self.raw_df['is_train']
                                == 1]['engine_no'].unique()
-        eg_split = np.array_split(train_eg, n_fold)
+        self._eg_split = np.array_split(train_eg, n_fold)
 
-        for i in range(n_fold):
-            score_i = self._learn_evaluate(eg_split[i])
+        pool = mp.Pool(PROC)
+        callback = pool.map(self._cv_i, range(n_fold))
 
-            print('%s/%s score: %s' % (i+1, n_fold, score_i))
-            self.cv_df.loc[i, 'score'] = score_i
-
-        self.cv_score = self.cv_df['score'].sum()/n_fold
+        self.cv_score = sum(callback)/n_fold
         print('CV score: %f' % self.cv_score)
+
+    def _cv_i(self, i):
+        score_i = self._learn_evaluate(self._eg_split[i])
+        print("%s-th score: %f" % (i+1, score_i))
+        return score_i
 
     def run_hold_out(self):
         valid_eg = valid_engine_random(self.raw_df, VALID_ENGINE_NUM)
