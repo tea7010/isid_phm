@@ -4,8 +4,8 @@ import pickle
 
 from .io.dl_data import download_unzip_data
 from .io.merge_train_test import merge_train_test
-from .io.label_valid import label_valid, valid_engine_random
-from .io.train_cut_off import cutoff_like_test
+from .process.label_valid import label_valid, valid_engine_random
+from .process.train_cut_off import cutoff_like_test
 
 
 DEFAULT_DIR = 'data'
@@ -26,6 +26,13 @@ class Dataset:
     '''
     baseデータの読み込み
     特徴量作成の親クラス
+
+    methods:
+        load_raw_data:
+            生データを結合したDFを読み込む。過去に生成していればpickelで読み込み高速化する
+        load/write_pickel:
+            fnameのpickelを読み込む/書き込む
+
     '''
 
     def __init__(self):
@@ -54,44 +61,6 @@ class Dataset:
 
                 self.write_pickel(_df, self.df_raw)
         return _df
-
-    def load_data(self, reproduce=True, cutoff=True, num_train_sampling=1, write_pickel=False):
-        self.df_p = 'base_df'
-        if reproduce:
-            return self._data_generate(reproduce, cutoff, num_train_sampling, write_pickel)
-        else:
-            if self.df_p in os.listdir(self._data_dir):
-                return self.load_pickel(self.df_p)
-
-            else:
-                return self._data_generate(reproduce, cutoff, num_train_sampling, write_pickel)
-
-    def _data_generate(self, reproduce, cutoff, num_train_sampling, write_pickel):
-        all_df = self.load_raw_data(reproduce).copy()
-
-        # validエンジンの指定
-        valid_engine = valid_engine_random(all_df, 30)
-        all_df = label_valid(all_df, valid_engine)
-
-        train = all_df[(all_df['is_train'] == 1) &
-                       (all_df['is_valid'] != 1)]
-        test = all_df[all_df['is_train'] == 0]
-        valid = all_df[all_df['is_valid'] == 1]
-
-        if cutoff:
-            # testデータみたいに、不完全なフライトデータにする
-            cut_train = cutoff_like_test(train, train, num_train_sampling)
-            merged_df = pd.concat([cut_train, test], axis=0)
-        else:
-            merged_df = pd.concat([train, test], axis=0)
-
-        # validはカットオフ1回のみ実施
-        cut_valid = cutoff_like_test(valid, test, 1)
-        merged_df = pd.concat([merged_df, cut_valid], axis=0)
-
-        if write_pickel:
-            self.write_pickel(merged_df, self.df_p)
-        return merged_df
 
     def load_pickel(self, fname):
         fpath = os.path.join(self._data_dir, fname)

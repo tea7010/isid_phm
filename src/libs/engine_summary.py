@@ -6,8 +6,8 @@ from sklearn.linear_model import Lasso
 from sklearn.linear_model import Ridge
 from sklearn.linear_model import LinearRegression
 
-from libs.get_train_valid_test import get_train_valid_test
-from libs.standarzation import standarzation_x, encode_y, decode_z
+from libs.process.get_train_valid_test import get_train_valid_test
+from libs.process.standarzation import standarzation_x, encode_y, decode_z
 
 from libs.engine_summarize.EngineSumBase import EngineSumBase
 from libs.engine_summarize.EngineSumTimeGrad import EngineSumTimeGrad
@@ -55,7 +55,8 @@ def _make_feature(df, REGENARATE, feat):
         summarized_df = EngineSumTimeGradRecent().create_feature(
             df, summarized_df, REGENARATE)
     if "timegrad_sted" in feat:
-        summarized_df = EngineSumTimeGradStEd().create_feature(df, summarized_df, REGENARATE)
+        summarized_df = EngineSumTimeGradStEd().create_feature(
+            df, summarized_df, REGENARATE)
     if 'last_dur' in feat:
         summarized_df = EngineSumLastDur().create_feature(
             df, summarized_df, REGENARATE)

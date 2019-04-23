@@ -1,0 +1,16 @@
+{
+    "approach": "Engine_summary_reggresion",
+    "regenarate": true,
+    "train_cutoff": true,
+    "num_resample_train": 1,
+    "feature": [
+        "last_dur",
+        "timegrad",
+        "timegrad_sted"
+    ],
+    "scaling": true,
+    "use_model": "SVR",
+    "model_params": {
+        "gamma": "auto"
+    }
+}
