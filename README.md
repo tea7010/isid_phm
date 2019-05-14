@@ -1,6 +1,4 @@
 # ISIDのデータコンペ用レポジトリ・管理 
-
-優勝目指せ！が第一目標かもしれませんが、BID全体の機械学習知識/経験の底上げが浅田さんの意図だと思ってます。
 * 現段階ではデータの理解度等に差があると思うので、3人で一つのモデルを良くしていくのは、なかなか難しいです。
 * そこで、個人個人でまずデータを眺める・単純でもいいので、モデリングしてみることをおすすめしたいです。
 * その後、チームで同じモデルを改善していくなり、違うアプローチを分担して試していったり考えましょう。
@@ -33,7 +31,6 @@ src
 サイト|URL
 -|-
 メインページ|https://industrial-big-data.io/phmc2019-datachallenge/
-データDLページ|https://industrial-big-data.io/phmc2019-datachallenge_dl/
 元ネタ？の論文|https://scholarcommons.usf.edu/cgi/viewcontent.cgi?article=7252&context=etd
 関連論文|https://ti.arc.nasa.gov/tech/dash/groups/pcoe/prognostic-data-repository/publications/#turbofan
 RULの論文|https://www.researchgate.net/publication/271921403_Remaining_useful_life_prediction_using_prognostic_methodology_based_on_logical_analysis_of_data_and_Kaplan-Meier_estimation
